@@ -18,7 +18,7 @@
                     <th>LLDP Interface</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="_interfaces">
                 {% for iface in interfaces %}
                     <tr id="{{ iface.name }}">
                         <td>{{ iface }}</td>
@@ -57,7 +57,13 @@ $(document).ready(function() {
         success: function(json) {
             $.each(json['get_lldp_neighbors_detail'], function(iface, neighbors) {
                 var neighbor = neighbors[0];
-                var row = $('#' + iface.split(".")[0].replace(/([\/:])/g, "\\$1"));
+                var iface_clean = iface.split(".")[0].replace(/([\/:])/g, "\\$1");
+                var row = $('#' + iface_clean);
+
+                if (row.length == 0) {
+                        row = $('<tr id="' + iface_clean + '"><td>' + iface + '</td><td colspan="2">-</td><td class="device"></td><td class="interface"></td></tr>');
+                        row.appendTo('tbody#_interfaces');
+                }
 
                 // Glean configured hostnames/interfaces from the DOM
                 var configured_device = row.children('td.configured_device').attr('data');
